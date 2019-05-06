@@ -1,0 +1,25 @@
+version: '2'
+services:
+  bert-toxic:
+    image: "chrisseiler96/tf_serving_bert_toxic:1556822021_v2"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "800M"
+        reservations:
+          cpus: "0.25"
+          memory: "100M"
+    ports:
+      - "8500:8500"
+      - "8501:8501"
+    labels:
+      kompose.service.type: LoadBalancer
+  toxic-client:
+    image: "chrisseiler96/bert_toxic_client:v1"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - bert-toxic
+    labels:
+      kompose.service.type: LoadBalancer
