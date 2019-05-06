@@ -2,8 +2,16 @@
 import grpc
 import tensorflow as tf
 
-import run_multilabels_classifier as classifiers
+#import run_multilabels_classifier as classifiers
+
+
+from run_multilabels_classifier import MultiLabelTextProcessor 
+from run_multilabels_classifier import convert_single_example 
+from run_multilabels_classifier import create_int_feature
+
+
 import tokenization
+import collections
 
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2_grpc
@@ -13,6 +21,8 @@ from tensorflow.core.framework import types_pb2
 
 from flask import Flask
 from flask import request
+
+import logging
 
 import random
 
@@ -35,17 +45,37 @@ def predict():
   # Parse Description
   tokenizer = tokenization.FullTokenizer(
     vocab_file="asset/vocab.txt", do_lower_case=True)
-  processor = classifiers.MultiLabelTextProcessor()
-  label_list = ['toxic',
-              'severe_toxic',
-              'obscene',
-              'threat',
-              'insult',
-              'identity_hate']
+  processor = MultiLabelTextProcessor()
+  label_list = [0,0,0,0,0,0]
+
+
+
+
+  # logging.basicConfig(level=logging.DEBUG,format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+  # logger = logging.getLogger(__name__)
+  # logger.info('getting json')
   content = request.get_json()
+  #logger.info('JSON: {}'.format(content))
   request_id = str(random.randint(1, 9223372036854775807))
-  inputExample = processor._create_example([request_id, content['description']], 'test')
-  tf_example = classifiers.from_record_to_tf_example(3, inputExample, label_list, max_seq_length, tokenizer)
+
+
+  inputExample = processor.serving_create_example([request_id, content['description']], 'test')
+  feature = convert_single_example(0, inputExample, label_list, max_seq_length, tokenizer)
+  
+  features = collections.OrderedDict()
+  features["input_ids"] = create_int_feature(feature.input_ids)
+  features["input_mask"] = create_int_feature(feature.input_mask)
+  features["segment_ids"] = create_int_feature(feature.segment_ids)
+  features["is_real_example"] = create_int_feature([int(feature.is_real_example)])
+  if isinstance(feature.label_id, list):
+    label_ids = feature.label_id
+  else:
+    label_ids = [feature.label_id]
+  features["label_ids"] = create_int_feature(label_ids)
+
+  tf_example = tf.train.Example(features=tf.train.Features(feature=features))
+  
+  
   model_input = tf_example.SerializeToString()
 
   # Send request
