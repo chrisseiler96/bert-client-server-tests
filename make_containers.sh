@@ -21,7 +21,7 @@ git clone https://github.com/chrisseiler96/bert-client-server-tests.git
 cd ~/bert
 
 CLIENT_IMAGE_NAME=bert_toxic_client
-CLIENT_VER=v3
+CLIENT_VER=v4
 DOCKER_USER=chrisseiler96
 mkdir asset
 gsutil cp gs://cloud-tpu-checkpoints/bert/uncased_L-12_H-768_A-12/vocab.txt asset/
@@ -41,4 +41,4 @@ wget http://34.73.232.214:8501/v1/models/bert
 wget http://host:port/v1/models/${MODEL_NAME}[/versions/${MODEL_VERSION}]
 
 # to run container
-docker run -p 8500:8500 -p 8501:8501 -it chrisseiler96/tf_serving_bert_toxic:1556822021_v4 sh
+docker run -p 8500:8500 -p 8501:8501 -it chrisseiler96/tf_serving_bert_toxic:1556822021_v5 sh

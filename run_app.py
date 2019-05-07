@@ -26,6 +26,8 @@ import logging
 
 import random
 
+import numpy as np
+
 app = Flask(__name__)
 
 
