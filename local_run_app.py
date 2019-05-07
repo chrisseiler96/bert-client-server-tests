@@ -19,6 +19,9 @@ from tensorflow.core.framework import tensor_pb2
 from tensorflow.core.framework import tensor_shape_pb2
 from tensorflow.core.framework import types_pb2
 
+
+import numpy as np
+
 from flask import Flask
 from flask import request
 
@@ -39,7 +42,7 @@ def predict():
   # MODEL PARAMS
   max_seq_length = 128
 
-  channel = grpc.insecure_channel("bert-toxic:8500")
+  channel = grpc.insecure_channel("localhost:8500")
   stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 
   # Parse Description
@@ -109,6 +112,10 @@ def predict():
   pretty_result = pretty_result.format(label_dict)
   #app.logger.info("Predicted Label: %s", label_list[result[0]])
   return pretty_result
+
+
+
+
 
 dtype_to_number = {
     'DT_INVALID': 0,
@@ -183,9 +190,6 @@ def predict_response_to_dict(predict_response):
 
 
 
-
-
- 
 
 
 if __name__ == '__main__':

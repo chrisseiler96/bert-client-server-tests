@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   bert-toxic:
     image: "chrisseiler96/tf_serving_bert_toxic:1556822021_v2"
@@ -16,7 +16,7 @@ services:
     labels:
       kompose.service.type: LoadBalancer
   toxic-client:
-    image: "chrisseiler96/bert_toxic_client:v1"
+    image: "chrisseiler96/bert_toxic_client:v3"
     ports:
       - "5000:5000"
     depends_on:
