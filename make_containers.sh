@@ -21,7 +21,7 @@ git clone https://github.com/chrisseiler96/bert-client-server-tests.git
 cd ~/bert
 
 CLIENT_IMAGE_NAME=bert_toxic_client
-CLIENT_VER=v4
+CLIENT_VER=v5
 DOCKER_USER=chrisseiler96
 mkdir asset
 gsutil cp gs://cloud-tpu-checkpoints/bert/uncased_L-12_H-768_A-12/vocab.txt asset/
@@ -31,14 +31,14 @@ docker push $DOCKER_USER/$CLIENT_IMAGE_NAME:$CLIENT_VER
 
 
 # run locally install gcloud and kompose
-gcloud container clusters create bert-cluster
+gcloud container clusters create bert-cluster #It's better to create a cluster in browser
 gcloud config set container/cluster bert-cluster
 gcloud container clusters get-credentials bert-cluster --zone us-east1-b --project bert-239819
 kompose convert --stdout | kubectl apply -f -
 kubectl get service # get service IPs
 
-wget http://34.73.232.214:8501/v1/models/bert
-wget http://host:port/v1/models/${MODEL_NAME}[/versions/${MODEL_VERSION}]
+#wget http://34.73.232.214:8501/v1/models/bert
+#wget http://host:port/v1/models/${MODEL_NAME}[/versions/${MODEL_VERSION}]
 
 # to run container
 docker run -p 8500:8500 -p 8501:8501 -it chrisseiler96/tf_serving_bert_toxic:1556822021_v5 sh
